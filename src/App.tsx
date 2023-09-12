@@ -1,22 +1,62 @@
-import { Github, FileVideo, Upload, Wand2 } from 'lucide-react';
+
+import { FileVideo, Github, Moon, Sun, Upload, Wand2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
 import { Label } from './components/ui/label';
-import { Select, SelectTrigger,SelectValue, SelectItem,SelectContent } from './components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
 import { Separator } from './components/ui/separator';
-import { Textarea } from './components/ui/textarea';
 import { Slider } from './components/ui/slider';
+import { Textarea } from './components/ui/textarea';
 
 export function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, []);
+
+  function toggleTheme() {
+    if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+      localStorage.theme = 'light';
+    } else {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+      localStorage.theme = 'dark';
+    }
+  }
   return (  
       <div className='min-h-screen flex flex-col'>
+        
         <div className='px-6 py-3 flex items-center justify-between border-b'>
-          <h1 className="text-xl font-bold ">upload.ai</h1>
+          <h1 className="text-xl font-bold ">upload.<code className='text-blue-300'>ai</code></h1>
                     
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
-              Desenvolvimento com ❤ no NLW da Rocketseat
-            </span>
-
+                             
+            <Button
+              title="Tema"
+              variant="outline"
+              className="flex w-10 p-0"
+              onClick={toggleTheme}
+            >
+            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+  
             <Separator orientation='vertical' className="h-6"/>
 
             <Button variant="outline">
@@ -124,8 +164,13 @@ export function App() {
           </Button>
         </form>
         </aside>
+       
+    
         </main>
-      </div>
-    )
-}
+        <span className=" text-xs flex justify-center text-gray-700 ">
+              Desenvolvimento no NLW da Rocketseat 🚀
+            </span>
 
+      </div>
+  )
+}
