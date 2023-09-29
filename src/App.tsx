@@ -1,5 +1,6 @@
-import { Github, Moon, Sun, Wand2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCompletion } from "ai/react";
+import { Github, PanelTopClose, PanelTopOpen, Wand2 } from "lucide-react";
+import { useState } from "react";
 import { PromptSelect } from "./components/prompt-select";
 import { Button } from "./components/ui/button";
 import { Label } from "./components/ui/label";
@@ -14,7 +15,7 @@ import { Separator } from "./components/ui/separator";
 import { Slider } from "./components/ui/slider";
 import { Textarea } from "./components/ui/textarea";
 import { VideoInputForm } from "./components/video-input-form";
-import { useCompletion } from "ai/react";
+import { Theme } from "./components/ui/theme";
 
 export function App() {
   const [temperature, setTemperature] = useState(0.5);
@@ -38,65 +39,67 @@ export function App() {
     },
   });
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  //iconMenu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTextVisible, setIsTextVisible] = useState(false);
 
-  useEffect(() => {
+  function toggleMenuIcon() {
     if (
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
+      localStorage.getItem("menu") === "open" ||
+      !localStorage.getItem("menu")
     ) {
-      document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
+      document.documentElement.classList.remove("open");
+      setIsMenuOpen(false);
+      setIsTextVisible(false); // Ocultar o texto ao fechar o menu
+      localStorage.setItem("menu", "close");
     } else {
-      document.documentElement.classList.remove("dark");
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  function toggleTheme() {
-    if (
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.remove("dark");
-      setIsDarkMode(false);
-      localStorage.theme = "light";
-    } else {
-      document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
-      localStorage.theme = "dark";
+      document.documentElement.classList.add("open");
+      setIsMenuOpen(true);
+      setIsTextVisible(true); // Exibir o texto ao abrir o menu
+      localStorage.setItem("menu", "open");
     }
   }
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="px-6 py-3 flex items-center justify-between border-b">
-        <h1 className="text-xl font-bold ">
-          upload.<code className="text-blue-300">ai</code>
-        </h1>
-
-        <div className="flex items-center gap-3">
+      <div className="px-6 py-3 flex items-center justify-between border-b bg-destructive ">
+        <div>
           <Button
-            title="Tema"
-            variant="outline"
-            className="flex w-10 p-0"
-            onClick={toggleTheme}
+            title="menu"
+            variant="secondary"
+            onClick={toggleMenuIcon}
+            className="gap-2"
           >
-            {isDarkMode ? (
-              <Sun className="h-4 w-4" />
+            {isMenuOpen ? (
+              <PanelTopClose className="h-4 w-4 color-green-400" />
             ) : (
-              <Moon className="h-4 w-4" />
+              <PanelTopOpen className="h-4 w-4" />
             )}
-          </Button>
-
-          <Separator orientation="vertical" className="h-6" />
-
-          <Button variant="outline">
-            <Github className="w-4 h-4 mr-2" />
-            Github
+            <h1 className="text-xl font-bold ">
+              Upload.<code className="text-green-400">ai</code>
+            </h1>
           </Button>
         </div>
+
+        <div className="flex items-center gap-3">
+          <Theme />
+
+          <Separator orientation="vertical" className="h-6" />
+          <a href="https://github.com/CharlesMSF" target="_blank">
+            <Button variant="secondary">
+              <Github className="w-4 h-4 mr-2" />
+              Github
+            </Button>
+          </a>
+        </div>
+      </div>
+      <div>
+        {isTextVisible && (
+          <div className="flex items-center justify-center text-muted-foreground">
+            Aplicação web que permite aos usuários inserir prompts, selecionar
+            configurações e fazer upload de vídeos para gerar respostas de texto
+            com base em uma IA.
+          </div>
+        )}
       </div>
       <main className="flex-1 p-6 flex gap-6">
         <div className="flex flex-col flex-1 gap-4">
@@ -117,7 +120,7 @@ export function App() {
           </div>
           <p className="text-sm text text-muted-foreground">
             Lembre-se: você pode utilizar a variável{" "}
-            <code className="text-violet-400">{"{transcription}"}</code> no seu
+            <code className="text-violet-600">{"{transcription}"}</code> no seu
             prompt para adicionar o conteúdo da transcrição do vídeo
             selecionado.
           </p>
@@ -173,8 +176,17 @@ export function App() {
           </form>
         </aside>
       </main>
-      <span className=" text-xs flex justify-center text-gray-700 ">
-        Desenvolvimento no NLW da Rocketseat 🚀
+
+      <span className="text-xs  text-center  text-gray-700">
+        Em Desenvolvimento por{" "}
+        <a
+          href="https://github.com/CharlesMSF"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-600"
+        >
+          CharlesMSF
+        </a>
       </span>
     </div>
   );
